@@ -7,9 +7,11 @@ pipeline {
             steps {
                 echo 'Creating virtual environment and installing dependencies...'
                 sh '''
-                    python3 -m venv .venv
-                    .venv/bin/pip install -r requirements.txt
-                '''
+    rm -rf .venv
+    python3 -m venv .venv
+    .venv/bin/pip install --no-cache-dir -r requirements.txt
+    .venv/bin/pip show Flask Werkzeug
+'''
             }
         }
 
