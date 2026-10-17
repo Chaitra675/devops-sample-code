@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Installing dependencies...'
+                echo 'Creating virtual environment and installing dependencies...'
                 sh '''
                     python3 -m venv .venv
                     .venv/bin/pip install -r requirements.txt
@@ -16,7 +16,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running unit tests...'
-                sh 'python3 -m unittest discover -s .'
+                sh '.venv/bin/python -m unittest discover -s .'
             }
         }
 
@@ -32,21 +32,20 @@ pipeline {
 
         stage('Run Application') {
             steps {
-                echo 'Starting application...'
+                echo 'Starting Flask application...'
                 sh '''
-                    nohup python3 "${WORKSPACE}/python-app-deploy/app.py" \
+                    nohup "${WORKSPACE}/.venv/bin/python" \
+                        "${WORKSPACE}/python-app-deploy/app.py" \
                         > "${WORKSPACE}/python-app-deploy/app.log" 2>&1 &
                     echo $! > "${WORKSPACE}/python-app-deploy/app.pid"
                 '''
             }
         }
 
-        stage('Test') {
-    steps {
-        echo 'Running unit tests...'
-        sh '.venv/bin/python -m unittest discover -s .'
-    }
-}
+        stage('Test Application') {
+            steps {
+                echo 'Testing Flask application...'
+                sh '.venv/bin/python test_app.py'
             }
         }
     }
@@ -60,4 +59,3 @@ pipeline {
         }
     }
 }
-
