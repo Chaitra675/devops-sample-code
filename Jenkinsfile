@@ -41,10 +41,12 @@ pipeline {
             }
         }
 
-        stage('Test Application') {
-            steps {
-                echo 'Testing application...'
-                sh 'python3 test_app.py'
+        stage('Test') {
+    steps {
+        echo 'Running unit tests...'
+        sh '.venv/bin/python -m unittest discover -s .'
+    }
+}
             }
         }
     }
